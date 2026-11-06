@@ -1,0 +1,58 @@
+# 模型结构参数
+#
+# 字段说明见 src/ai_infra/models.py::Model
+# params_billion / active_params_billion 单位均为 B (10^9)
+# active_params_billion: MoE 模型取共享 + top-k 激活专家的参数量；Dense 模型等于 params_billion
+
+- id: llama3-8b
+  family: llama3
+  params_billion: 8.0
+  active_params_billion: 8.0
+  num_layers: 32
+  hidden_size: 4096
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  vocab_size: 128256
+  is_moe: false
+  default_dtype: bf16
+  max_seq_len: 8192
+  as_of: "2025-06"
+  source: "Meta Llama 3 官方模型卡"
+  confidence: high
+
+- id: llama3-70b
+  family: llama3
+  params_billion: 70.0
+  active_params_billion: 70.0
+  num_layers: 80
+  hidden_size: 8192
+  num_attention_heads: 64
+  num_kv_heads: 8
+  head_dim: 128
+  vocab_size: 128256
+  is_moe: false
+  default_dtype: bf16
+  max_seq_len: 8192
+  as_of: "2025-06"
+  source: "Meta Llama 3 官方模型卡"
+  confidence: high
+
+- id: deepseek-v3-671b
+  family: deepseek-v3
+  params_billion: 671.0
+  active_params_billion: 37.0
+  num_layers: 64
+  hidden_size: 8192
+  num_attention_heads: 128
+  num_kv_heads: 128
+  head_dim: 128
+  is_moe: true
+  num_experts: 256
+  top_k: 8
+  default_dtype: bf16
+  max_seq_len: 128000
+  as_of: "2025-06"
+  source: "DeepSeek 官方技术报告"
+  confidence: high
+  notes: "MoE，active params 仅 37B，KV 头数等于 attention 头数 (非 GQA)"

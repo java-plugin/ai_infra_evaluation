@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+.uv/
+*.egg
+
+# Tool caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Env
+.env
+.env.local
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Data / artifacts (source PDFs never committed)
+*.pdf
+source/
+.source/
+reports/
+*.log
+*.out
+
+# RAG 索引：可由 corpus 重建（corpus 本身要提交，索引不进 Git）
+data/knowledge/index.db
+*.db.tmp
+
+# Playwright
+playwright-report/
+test-results/
+
+# Node / Next.js
+web/.next/
+web/node_modules/
+web/.env.local
+
+# OS
+.DS_Store
+ehthumbs.db

@@ -1,0 +1,79 @@
+# GPU 规格与参考价格
+#
+# 字段说明见 src/ai_infra/models.py::GPU
+# 价格为公开渠道参考价，区间内取中位数用于计算。
+# as_of: YYYY-MM，confidence: high|medium|low
+#
+# 每条记录必须含 source / as_of / confidence。CI 会校验。
+
+- id: h100-sxm5-80gb
+  vendor: nvidia
+  memory_gb: 80
+  memory_type: HBM3
+  bf16_tflops_dense: 989
+  bf16_tflops_sparse: 1978
+  fp16_tflops_dense: 494.5
+  fp16_tflops_sparse: 989
+  tdp_w: 700
+  price_cny_min: 200000
+  price_cny_max: 250000
+  as_of: "2025-06"
+  source: "公开渠道价，批发/零售区间"
+  confidence: medium
+
+- id: h800-sxm5-80gb
+  vendor: nvidia
+  memory_gb: 80
+  memory_type: HBM3
+  bf16_tflops_dense: 989
+  bf16_tflops_sparse: 1978
+  tdp_w: 700
+  price_cny_min: 130000
+  price_cny_max: 180000
+  as_of: "2025-06"
+  source: "公开渠道价，批发/零售区间"
+  confidence: medium
+  notes: "H100 出口受限版本，NVLink 带宽略降"
+
+- id: a100-sxm4-80gb
+  vendor: nvidia
+  memory_gb: 80
+  memory_type: HBM2e
+  bf16_tflops_dense: 312
+  bf16_tflops_sparse: 624
+  fp16_tflops_dense: 19.5
+  fp16_tflops_sparse: 312
+  tdp_w: 400
+  price_cny_min: 90000
+  price_cny_max: 120000
+  as_of: "2025-06"
+  source: "公开渠道价"
+  confidence: medium
+
+- id: l40s-pcie-48gb
+  vendor: nvidia
+  memory_gb: 48
+  memory_type: GDDR6
+  bf16_tflops_dense: 362
+  fp16_tflops_dense: 181
+  tdp_w: 350
+  price_cny_min: 35000
+  price_cny_max: 50000
+  as_of: "2025-06"
+  source: "公开渠道价"
+  confidence: medium
+  notes: "性价比推理卡，PCIe，无 NVLink"
+
+- id: 910b-sxm-64gb
+  vendor: ascend
+  memory_gb: 64
+  memory_type: HBM
+  bf16_tflops_dense: 320
+  fp16_tflops_dense: 160
+  tdp_w: 400
+  price_cny_min: 60000
+  price_cny_max: 90000
+  as_of: "2025-06"
+  source: "公开渠道价"
+  confidence: low
+  notes: "华为昇腾，生态成熟度与 CUDA 仍有差异"

@@ -1,0 +1,115 @@
+# 知识卡片：供 Agent 检索的最小知识库。
+# 字段: id / title / tags / body / source
+# body 为原创提炼，不逐字复制原书。
+
+- id: mfu-definition
+  title: MFU 是什么
+  tags: [MFU, 性能, 训练, 推理]
+  body: >
+    MFU（Model FLOPs Utilization）等于实际达到的 FLOPs 除以硬件峰值 FLOPs。
+    Dense 模型每 token 前向+反向约 6N 次浮点运算（N 为参数量），
+    注意力项还会随序列长度增加。MoE 模型必须用激活参数量而不是总参数量，
+    否则 MFU 会被低估。MFU 低不一定代表集群差，可能是通信、气泡、重计算或数据加载导致。
+  source: "AI Infra 全栈实战 第 5 章"
+
+- id: kv-cache-formula
+  title: KV Cache 显存公式
+  tags: [KV Cache, 显存, 推理, GQA]
+  body: >
+    单 token 的 KV Cache 字节数约为 2 × 层数 × KV 头数 × head_dim × 精度字节数。
+    总占用还要乘序列长度和 batch，并预留 5% 左右的页式管理开销。
+    GQA/MQA 通过减少 KV 头数来降低 KV 占用，MLA 则用低秩压缩进一步降低。
+    常见错误是把 attention 头数当成 KV 头数，或忘记乘 batch。
+  source: "AI Infra 全栈实战 第 3 章"
+
+- id: tco-formula
+  title: TCO 的构成
+  tags: [TCO, 成本, CapEx, OpEx]
+  body: >
+    TCO = CapEx（GPU、网络、存储）+ OpEx（电力、托管、人力、软件、备件）× 年限
+    + 隐藏成本（迁移、调试、备件）- 残值。电力成本 = 节点数 × 单节点功率 × PUE × 8760 × 电价。
+    最常见的错误是节点数与 GPU 数混用，以及托管费已含电却重复计电费。
+  source: "AI Infra 全栈实战 第 6 章"
+
+- id: gpu-hour-metric
+  title: 每 GPU 小时成本
+  tags: [TCO, GPUh, 利用率]
+  body: >
+    每 GPU 小时成本 = TCO / (GPU 总数 × 8760 × 年限 × 利用率)。
+    利用率是分母，所以同样的集群，利用率从 60% 降到 30%，每 GPU 小时成本几乎翻倍。
+    自建与云的盈亏平衡点，本质上就是让自建的每 GPU 小时成本等于云的每 GPU 小时价格。
+  source: "AI Infra 全栈实战 第 6 章"
+
+- id: nodes-vs-gpus
+  title: 节点数与 GPU 数
+  tags: [口径, 成本, 集群]
+  body: >
+    一台 8 卡服务器是 1 个节点、8 张 GPU。成本核算里必须显式区分 nodes 和 gpus_per_node，
+    否则会出现「64 台 DGX = 64 张卡」或「1000 张卡按 1000 台服务器算电费」这类量级错误。
+    本项目的 schema 强制两个字段分开，total_gpus 由代码计算。
+  source: "本项目口径规范"
+
+- id: pue
+  title: PUE 与电力成本
+  tags: [PUE, 电力, 成本]
+  body: >
+    PUE = 数据中心总功耗 / IT 设备功耗。风冷常见 1.2–1.5，液冷可低至 1.1。
+    电力成本对 TCO 的影响在高电价、低利用率场景下会被放大。
+    做敏感性分析时，电价与 PUE 应同时考虑，而不是只改一个。
+  source: "AI Infra 全栈实战 第 6 章"
+
+- id: self-build-vs-cloud
+  title: 自建还是上云
+  tags: [选型, 云, 自建, 盈亏平衡]
+  body: >
+    自建适合：长期稳定负载、利用率高、隐私/合规要求高、有运维团队。
+    云适合：负载波动大、团队小、需要快速上线、需要弹性。
+    判断标准不是「单价谁低」，而是「在预期利用率下，3 年 TCO 谁低」，
+    并考虑迁移成本、供应商锁定、合规和故障责任。
+  source: "AI Infra 全栈实战 第 6 / 18 章"
+
+- id: moe-efficiency
+  title: MoE 的效率与代价
+  tags: [MoE, 训练, 推理, 通信]
+  body: >
+    MoE 用激活参数量换总算力：671B 总参数、37B 激活参数的模型，
+    单 token 计算量接近 37B Dense 模型，但显存要装下全部专家。
+    代价是专家并行（EP）带来的 All-to-All 通信、负载不均衡和路由抖动。
+    评估 MoE 时不能只看 MFU，还要看 EP 通信占比和专家利用率。
+  source: "AI Infra 全栈实战 第 3 / 11 章"
+
+- id: pd-disaggregation
+  title: PD 分离
+  tags: [推理, PD, TTFT, 吞吐]
+  body: >
+    Prefill 阶段计算密集、Decode 阶段访存密集，混部会导致资源争抢。
+    PD 分离把两个阶段放到不同实例，用 KV 传输连接，可以同时优化 TTFT 和吞吐，
+    但会增加 KV 传输开销和调度复杂度。适合长上下文、高并发、低 TTFT 的场景。
+  source: "AI Infra 全栈实战 第 3 章"
+
+- id: gqa-mqa
+  title: GQA / MQA
+  tags: [GQA, MQA, KV Cache, 推理]
+  body: >
+    MHA 每个 attention 头都有独立 KV；MQA 所有头共享一组 KV；GQA 折中，
+    多个头共享一组 KV。KV 头数越少，KV Cache 越小，解码阶段越省显存和带宽，
+    但可能损失少量质量。Llama 3 70B 使用 64 个 attention 头、8 个 KV 头。
+  source: "AI Infra 全栈实战 第 3 章"
+
+- id: utilization
+  title: 利用率为什么重要
+  tags: [利用率, TCO, 运维]
+  body: >
+    利用率的瓶颈通常不在 GPU，而在数据管道、调度、通信和推理请求的到达率。
+    自建集群利用率低于 40% 时，往往不如按需云；高于 70% 时，自建优势明显。
+    提升利用率的杠杆包括：混部、弹性调度、批量推理、Spot 兜底、模型量化。
+  source: "AI Infra 全栈实战 第 4 / 6 章"
+
+- id: report-structure
+  title: 一份 AI Infra 选型报告该有什么
+  tags: [报告, 选型, 交付]
+  body: >
+    至少包含：执行摘要、业务与模型画像、关键假设、方案对比、成本分析、
+    性能与容量、风险与避坑、实施路线、数据来源。
+    每个数字都要能追溯到假设和来源，否则报告无法被评审。
+  source: "本项目报告规范"
